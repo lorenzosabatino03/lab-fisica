@@ -10,8 +10,9 @@
 	<style type = "text/css">
 	.cella{
 		background-color: #aaffff;
-		padding: 25px;
-		width: 38%
+		padding: 5px 25px;
+		width: 38%;
+		text-align: center;
 	}
 	.paragrafo{
 		color:#000000;
@@ -32,7 +33,17 @@
 	.cella-classe a:hover {
 	    color: darkred;
 	}
- 
+	.cella-classe:hover {
+    background-color: #ffff7f; /* illumina con un colore giallo */
+    color: black;              /* colore del testo in hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* ombra per effetto glow */
+    transition: background-color 0.3s, box-shadow 0.3s; /* effetto morbido */
+	}
+
+	.cella-classe:hover a {
+	    color: black; /* colore del link in hover */
+	}
+	 
     body {
       background-color: white;
       font-family: inherit; 
@@ -89,19 +100,19 @@
   </style>
 </head>
 	
-<body bgcolor="#FFFFFF">
+<body bgcolor="#ffffff">
 
 
   <table   cellpadding=5 cellspacing=0 cols=2 border=0 width=100%>
   	<tr valign=top>
   		<td  class="cella" >
-		<h2>Lorenzo Mauro Sabatino</h2>
-		<h4 style="font-size: 18px;"><B>Laboratorio di Fisica</B></h4>
+		<h2 style="font-size: 38px">Lorenzo Mauro Sabatino</h2>
+		<h4 style="font-size: 28px;"><b>Laboratorio di Fisica</b></h4>
 		
-		<p>
+		<p style="font-size: 20px;">
 		  Collegio Ballerini<br>
 		  Liceo Scientifico opz. Scienze Applicate<br>
-		  <A HREF="https://www.collegioballerini.it/"target="_blank" rel="noopener noreferrer">Sito della scuola</A>
+		  <a href="https://www.collegioballerini.it/"target="_blank" rel="noopener noreferrer">Sito della scuola</a>
 		</p>
 		
 		<p>
@@ -112,19 +123,18 @@
 		</p>    
       	</td>
       	
+      	<!--
       	<td style="vertical-align: middle; text-align: center">
   			<img src="foto/image002.jpg" alt="" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
   		</td>
   		
   		<td style="vertical-align: middle; text-align: center">
   			<img src="foto/Screenshot 2024-10-29 234925.png" alt="" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
-  		</td>
+  		</td> -->
   	
   	</tr>
   </table>
   
-  <br>
-
 
 	<!------------------------------------>
 
@@ -140,13 +150,15 @@
 
 	<h3 style="color:#ff0000;">Qualche informazione</h3>
 		<p class="paragrafo">
-		  Qui potrai trovare del materiale utile per il laboratorio di fisica: video, siti internet, animazioni, simulazioni, approfondimenti...<br>
-		  Moltissime risorse ti aiuteranno a comprendere meglio i concetti trattati in classe.
+		  Questo sito è stato creato per raccogliere e condividere i materiali didattici utili per il laboratorio di fisica: video, siti, approfondimenti, animazioni, simulazioni interattive e guide per realizzare le relazioni di laboratorio.
+		   <br>
+		   Questi contenuti ti aiuteranno a comprendere meglio gli argomenti affrontati in classe. <br>
+Buono studio e buona navigazione!
 		</p>
 
 
 
-	<h3 style="color:#ff0000;">Materiali interessanti</h3>
+	<h3 style="color:#ff0000;">Siti utili</h3>
 
 	<style>
 	.materiali-tabella {
@@ -185,32 +197,42 @@
 	<table class="materiali-tabella">
 	  <tr>
 	    <td>
-	      <h4>Siti</h4>
+	      <h4>Materiali interessanti</h4>
 	      <ul>
-	        <li><a href="https://phet.colorado.edu" target="_blank">PhET Colorado</a></li>
-	        <li><a href="https://physicsclassroom.com" target="_blank">The Physics Classroom</a></li>
+	        <li><a href="https://www.matematika.it/public/allegati/40/09_12_Tabella_valori_angoli_ricorrenti_1_6.pdf" target="_blank">Angoli e trigonometria</a></li>
+	        <li><a href="https://sparkvue.pasco.com/" target="_blank"> SparkVue (per sensori in laboratorio)</a></li>
+	        <li><a href="https://www.youtube.com/watch?v=VrqKGE8Yj0s&list=PLNRVpaxKHWxhOwKoxZtF1ZXcKV-ubKGqp&index=5" target="_blank"> La scienza è arte? | Lorenzo Pizzuti | TEDxModena (YouTube)</a></li>
+	        <li><a href="https://javalab.org/en/crt_tv_en/" target="_blank"> Per curiosità</a></li>
 	       
 	      </ul>
 	    </td>
 	    <td>
 	      <h4>Simulazioni</h4>
-	      <ul>
+	   		 <li><a href="https://phet.colorado.edu" target="_blank">PhET Colorado</a></li>
 	         <li><a href="https://ophysics.com/index.html" target="_blank">oPhysics</a></li>
 		     <li><a href="https://javalab.org/en/" target="_blank">Javalab</a></li>
 		     <li><a href="https://www.thephysicsaviary.com/Physics/Programs/Labs/find.php" target="_blank">thephysicsaviary</a></li>
 		     <li><a href="https://www.new3jcn.com/simulation.html" target="_blank">3jcn Physics Simulator</a></li>
 		     <li><a href="https://effectuall.github.io/sims.html" target="_blank">Effectuall</a></li>
-		      <li><a href="https://javalab.org/en/crt_tv_en/" target="_blank"> Per curiosità</a></li>
+		      
 	    </td>
 	    <td>
-	      <h4>Relazioni</h4>
+	      <h4>Canali YouTube di consultazione e approfondimento</h4>
 	      <ul>
-	        <li><a href="file pdf/Guida_alla_relazione_di_laboratorio.pdf" target="_blank">Guida alla relazione di laboratorio</a></li>
+	        <li><a href="https://www.youtube.com/@veritasium" target="_blank">Veritasium</a></li>
+	        <li><a href="https://www.youtube.com/@fisicainvideo5012" target="_blank">Fisica in video</a></li>
+	        <li><a href="https://www.youtube.com/@SteveMould" target="_blank">Steve Mould</a></li>
+	        <li><a href="https://www.youtube.com/@TheActionLab" target="_blank">The Action Lab</a></li>
+	        <li><a href="https://www.youtube.com/@lecturesbywalterlewin.they9259" target="_blank">Walter Lewin</a></li>
 	      </ul>
 	    </td>
 	  </tr>
 	</table>
-
+	
+	<h3 style="color:#ff0000;">Guida alle relazioni di laboratorio</h3>
+	<p class="paragrafo">
+		<a href="file pdf/Guida_alla_relazione_di_laboratorio.pdf" target="_blank">Guida alla relazione di laboratorio</a>
+	</p>
 
 
 
