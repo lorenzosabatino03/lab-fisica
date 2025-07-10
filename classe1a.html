@@ -115,7 +115,13 @@
         box-sizing: border-box;
         margin-bottom: 20px;
       }
-    }				 
+    }	
+    @media (max-width: 700px) {
+	  .hide-on-mobile {
+	  display: none;
+	  }
+	}
+			 
   </style>
 </head>
 
@@ -141,11 +147,11 @@
 		</td>
       	
       	<td style="vertical-align: middle; text-align: center">
-  			<img src="foto/image002.jpg" alt="" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
+  			<img src="foto/image002.jpg" alt="" class="hide-on-mobile" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
   		</td>
   		
   		<td style="vertical-align: middle; text-align: center">
-  			<img src="foto/Screenshot 2024-10-29 234925.png" alt="" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
+  			<img src="foto/Screenshot 2024-10-29 234925.png" class="hide-on-mobile" alt="" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
   		</td>
   	
   	</tr>
