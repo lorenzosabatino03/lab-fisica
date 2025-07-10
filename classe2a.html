@@ -123,33 +123,67 @@
 
 <body>
 
- <table   cellpadding=5 cellspacing=0 cols=2 border=0 width=100%>
-  	<tr valign=top>
-  		<td  class="cella" >
-		<h2>Lorenzo Mauro Sabatino</h2>
-		<h4 style="font-size: 18px;margin-bottom: 2px; margin-top: 5px; "><B>Laboratorio di Fisica</B></h4>
+ <style>
+	  /* Nasconde le immagini e fa espandere la cella a sinistra su mobile */
+	  @media (max-width: 700px) {
+	    .hide-on-mobile {
+	      display: none;
+	    }
+
+	    .cella {
+	      width: 100% !important;
+	      display: block;
+	      box-sizing: border-box; 
+	      text-align: center;
+	    }
+	    .cella h2,
+	    .cella h3,
+	    .cella h4 {
+	      text-align: center !important;
+	      margin-left: auto !important;
+	      margin-right: auto !important;
+	    }
+	   }
+	</style>
+	
+<table cellpadding="5" cellspacing="0" border="0" width="100%">
+  <tr valign="top">
+    <td class="cella">
+      <h2>Lorenzo Mauro Sabatino</h2>
+      <h4 style="font-size: 18px;margin-bottom: 2px; margin-top: 5px;"><b>Laboratorio di Fisica</b></h4>
+      <h3 style="font-size: 48px;text-align: left; margin-top: 5px; margin-bottom: 31px; padding: 2px"><b>Classe 2a</b></h3>
+
+      <div style="margin-bottom: 15px; margin-top: 15px; padding: 1px">
+        <a href="index.html" style="text-decoration: none; font-size: 14px; font-family: times new roman, serif; color: black;">
+          <i class="fas fa-home" style="font-size: 18px; color: black; vertical-align: middle;"></i>
+          <span style="margin-left: 6px;">Torna alla pagina principale</span>
+        </a>
+      </div>
+    </td>
+
+    <td style="vertical-align: middle; text-align: center; width: 31%;" class="hide-on-mobile">
+      <img src="foto/image002.jpg" alt="" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
+    </td>
+
+    <td style="vertical-align: middle; text-align: center; width: 31%;" class="hide-on-mobile">
+      <img src="foto/Screenshot 2024-10-29 234925.png" alt="" style="width: 90%; height: auto; transform: rotate(0deg); border: 0;">
+    </td>
+  </tr>
+</table>
+  
+
+
+	<!------------------------------------>
+
 		
-		<h3 style="font-size: 48px;text-align: left; margin-top: 5px; margin-bottom: 31px; padding: 2px"><B>Classe 2a</B></h3>
-		
-		
-		<div style="margin-bottom: 15px; margin-top: 15px; padding: 1px ">
-		  <a href="index.html" style="text-decoration: none; font-size: 14px; font-family: times new roman, serif; color: black;">
-		    <i class="fas fa-home" style="font-size: 18px; color: black; vertical-align: middle;"></i>
-		    <span style="margin-left: 6px;">Torna alla pagina principale</span>
-		  </a>
-		</div>
-		</td>
-      	
-      	<td style="vertical-align: middle; text-align: center">
-  			<img src="foto/Screenshot 2024-12-24 173244.png" alt="" style="width: 500; height: auto; transform: rotate(0deg); border: 0;">
-  		</td>
-  		
-  		<td style="vertical-align: middle; text-align: center">
-  			<img src="foto/M5.2.2.1.1.png" alt="" style="width: 100%; height: auto; transform: rotate(0deg); border: 0;">
-  		</td>
-  	
-  	</tr>
-  </table>
+	<table style="border-collapse: collapse; width: 100%;">
+	  <tr>
+	    <td class="cella-classe"><a href="classe1a.html">Classe 1a</a></td>
+	    <td class="cella-classe"><a href="classe2a.html">Classe 2a</a></td>
+	    <td class="cella-classe"><a href="classe3a.html">Classe 3a</a></td>
+	    <!-- <td class="cella-classe"><a href="classe4a.html">Classe 4a</a></td>-->
+	  </tr>
+	</table>
   
 
 
