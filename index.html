@@ -5,6 +5,7 @@
 
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Laboratorio di Fisica</title>
 	 
 	<style type = "text/css">
@@ -179,14 +180,6 @@
 	  width: 33.33%;
 	}
 	
-  @media (max-width: 700px) { /*per visualizzare tabella correttamente su cellulare */
-  .materiali-tabella,
-  .materiali-tabella tr,
-  .materiali-tabella td {
-    display: block;
-    width: 100% !important;
-  	}
-  }
 
   .materiali-tabella td {
     margin-bottom: 20px;
@@ -208,6 +201,26 @@
 	.materiali-tabella li {
 	  margin-bottom: 6px;
 	}
+	
+	
+	/*Stile responsive per dispositivi mobili */
+    @media (max-width: 700px) {
+      .materiali-tabella {
+        display: block;
+      }
+
+      .materiali-tabella tr {
+        display: block;
+        width: 100%;
+      }
+
+      .materiali-tabella td {
+        display: block;
+        width: 100% !important;
+        box-sizing: border-box;
+        margin-bottom: 20px;
+      }
+    }
 	</style>
 
 	<table class="materiali-tabella">
