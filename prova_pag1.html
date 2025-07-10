@@ -125,18 +125,25 @@
 
 <style>
   /* Nasconde le immagini e fa espandere la cella a sinistra su mobile */
-  @media (max-width: 700px) {
-    .hide-on-mobile {
-      display: none;
-    }
+	  @media (max-width: 700px) {
+	  /* Nasconde le immagini */
+	  .hide-on-mobile {
+	    display: none;
+	  }
 
-    .cella {
-      width: 100% !important;
-      display: block;
-      box-sizing: border-box;
-      text-align: center;
-    }
-  }
+	  /* Espande e centra tutta la cella */
+	  .cella {
+	    width: 100% !important;
+	    display: block;
+	    box-sizing: border-box;
+	  }
+
+	  /* Centra solo "Classe 1a" */
+	  .cella h3 {
+	    text-align: center !important;
+	  }
+	}
+
 </style>
 
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
