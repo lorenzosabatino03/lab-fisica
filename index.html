@@ -169,6 +169,7 @@
 	  font-family: times new roman;
 	  table-layout: fixed;
 	}
+	
 
 	.materiali-tabella th,
 	.materiali-tabella td {
@@ -177,6 +178,19 @@
 	  vertical-align: top;
 	  width: 33.33%;
 	}
+	
+  @media (max-width: 700px) { /*per visualizzare tabella correttamente su cellulare */
+  .materiali-tabella,
+  .materiali-tabella tr,
+  .materiali-tabella td {
+    display: block;
+    width: 100% !important;
+  	}
+  }
+
+  .materiali-tabella td {
+    margin-bottom: 20px;
+  }
 
 	.materiali-tabella h4 {
 	  text-align: center;             
@@ -247,6 +261,10 @@
 	<!--
 	<img src="foto/Screenshot 2025-07-07 234704.png" alt="immagine finale"
      style="display: block; margin: 0 auto; width: 40%; height: auto; border: 0; margin-top: 55px; margin-bottom: 55px"> -->
+
+
+
+
 
 	<img src="foto/Screenshot 2025-07-07 234704.png" alt="frase Feynman"
      style="
