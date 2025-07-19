@@ -8,83 +8,97 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 
-	<style type = "text/css">
-	.cella{
-		background-color: #aaffff;
-		padding: 5px 25px;
-		width: 38%;
-		text-align: center;
-	}
-	 
-    body {
-      background-color: white;
-      font-family: inherit; 
-      margin: 20px;
-      color: black;
-    }
-    
-    h3 {
-      color: #005f99;
-      cursor: pointer;
-      margin-top: 1.5em;
-      border: 1px solid #005f99;
-      border-radius: 6px;
-      padding: 10px;
-      background: #e6f0fa;
-      user-select: none;
-    }
-    .foto-list {
-      margin: 10px 0 20px 20px;
-      display: none;
-      list-style: none;
-      padding-left: 0;
-    }
+	<style type="text/css">
+  body {
+    background-color: white;
+    font-family: inherit; 
+    margin: 20px;
+    color: black;
+  }
+
+  .cella {
+    background-color: #aaffff;
+    padding: 5px 25px;
+    width: 38%;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin-top: 30px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+  }
+
+  h3 {
+    color: #005f99;
+    cursor: pointer;
+    margin-top: 1.5em;
+    border: 1px solid #005f99;
+    border-radius: 6px;
+    padding: 10px;
+    background: #e6f0fa;
+    user-select: none;
+  }
+
+  .foto-list {
+    display: none; /* chiuso inizialmente */
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 20px 0;
+    flex-wrap: wrap; /* se tante immagini, vanno a capo */
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .foto-list li {
+    flex: 1 1 120px;
+    max-width: 150px;
+    margin: 0;
+    text-decoration: none;
+  }
+
+  .thumb {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+  }
+
+  .foto-list li a:hover .thumb {
+    transform: scale(1.5);
+    z-index: 10;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .foto-list figcaption {
+    text-decoration: none;
+    font-size: 12px;
+    color: #333;
+    background-color: #f9f9f9;
+    padding: 4px;
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 5px;
+  }
+
+  /* Responsive per schermi piccoli */
+  @media (max-width: 600px) {
     .foto-list li {
-      margin: 5px 0;
-      cursor: pointer;
-      color: #005f99;
-      text-decoration: underline;
+      flex: 1 1 80px;
+      max-width: 100px;
     }
-    .foto-list li:hover {
-      color: #003f66;
-    }    
-    h1 {
-      margin-bottom: 20px;
+
+    .thumb {
+      width: 100%;
     }
-    h2 {
-      margin-top: 30px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
-    }
-    .foto-list {
-	  display: none; /* chiuso inizialmente */
-	  list-style: none;
-	  padding-left: 0;
-	  gap: 10px;
-	  margin: 10px 0 20px 0;
-	  flex-wrap: wrap; /* se tante immagini, vanno a capo */
-	}
+  }
+</style>
 
-	.foto-list li {
-	  margin: 0;
-	}
-
-	.thumb {
-	  width: 100px;
-	  height: auto;
-	  border-radius: 4px;
-	  transition: transform 0.3s ease;
-	}
-
-	.foto-list li a:hover .thumb {
-	  transform: scale(1.5);
-	  z-index: 10;
-	  position: relative;
-	  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-	}
-
-
-  </style>
 </head>
 	
 <body bgcolor="#ffffff">
@@ -108,29 +122,35 @@
 
   <h3 onclick="toggleFolder('cartella1')">Foto generali del laboratorio</h3>
 	<ul id="cartella1" class="foto-list">
-	  <li><a href="foto/foto_galleria/IMG_0830.jpeg" data-lightbox="cartella1" data-title="Foto Esperimento 1 - 1"><img src="foto/foto_galleria/IMG_0830.jpeg" alt="Foto 1" class="thumb" /></a></li>
-	  <li><a href="foto/foto_galleria/IMG_0831.jpeg" data-lightbox="cartella1" data-title="Foto Esperimento 1 - 2"><img src="foto/foto_galleria/IMG_0831.jpeg" alt="Foto 2" class="thumb" /></a></li>
-	  <li><a href="foto/foto_galleria/IMG_0961.WEBP" data-lightbox="cartella1" data-title="Foto Esperimento 1 - 2"><img src="foto/foto_galleria/IMG_0961.WEBP" alt="Foto 2" class="thumb" /></a></li>
+	  <li><a href="foto/foto_galleria/IMG_0830.jpeg" data-lightbox="cartella1" data-title="Materiali vari"><img src="foto/foto_galleria/IMG_0830.jpeg" alt="Materiali vari" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Materiali vari</figcaption></li>
+	  
+	  <li><a href="foto/foto_galleria/20241115_123535.jpg" data-lightbox="cartella1" data-title="Materiali vari"><img src="foto/foto_galleria/20241115_123535.jpg" alt="Materiali vari" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Materiali vari</figcaption></li>
+	  
+	  
+	  
 	</ul>
 
 
     
-    <h3 onclick="toggleFolder('cartella_bis')">prova</h3>
-	<ul id="cartella_bis" class="foto-list">
-	  <li>
-	    <a href="img/esperimento1_foto1.jpg" data-lightbox="cartella_bis" data-title="Foto Esperimento 1bis">
-	      <img src="foto/gli-urti.png" alt="Foto 1" class="thumb" /></a>
-	  </li>
-	<!-- altre foto -->
+    <h3 onclick="toggleFolder('cartella2')">Esperimenti</h3>
+	<ul id="cartella2" class="foto-list">
+	  <li><a href="foto/foto_galleria/IMG_0831.jpeg" data-lightbox="cartella1" data-title="Piani inclinati"><img src="foto/foto_galleria/IMG_0831.jpeg" alt="Piani inclinati" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Piani inclinati</figcaption></li>
+	  
+	  <li><a href="foto/foto_galleria/20241106_095348.jpg" data-lightbox="cartella1" data-title="Esperimento piano inclinato"><img src="foto/foto_galleria/20241106_095348.jpg" alt="Esperimento piano inclinato" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Esperimento piano <br> inclinato</figcaption></li>
+	  
+	  <li><a href="foto/foto_galleria/20241106_095402.jpg" data-lightbox="cartella1" data-title="Esperimento corpo appeso"><img src="foto/foto_galleria/20241106_095402.jpg" alt="Esperimento corpo appeso" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Esperimento corpo <br> appeso</figcaption></li>
+	  
+	  <li><a href="foto/foto_galleria/20241106_095419.jpg" data-lightbox="cartella1" data-title="Esperimento equilibrio"><img src="foto/foto_galleria/20241106_095419.jpg" alt="Esperimento equilibrio" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Esperimento <br> equilibrio</figcaption></li>
+	  
+	  <li><a href="foto/foto_galleria/20250207_122739.jpg" data-lightbox="cartella1" data-title="Equilibrio dei momenti"><img src="foto/foto_galleria/20250207_122739.jpg" alt="Equilibrio dei momenti" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Equilibrio dei momenti</figcaption></li>
+	  
+	  <li><a href="foto/foto_galleria/20250528_110143.jpg" data-lightbox="cartella1" data-title="Loop"><img src="foto/foto_galleria/20250528_110143.jpg" alt="Loop" class="thumb" /></a> <figcaption style="font-size: 12px; color: #333;">Loop</figcaption></li>
+	
 	
 
   </ul>
 
-  <h3 onclick="toggleFolder('cartella2')">Cartella Esperimenti 2</h3>
-  <ul id="cartella2" class="foto-list">
-    <li><a href="img/esperimento2_foto1.jpg" data-lightbox="cartella2" data-title="Foto Esperimento 2 - 1">Foto 1</a></li>
-    <li><a href="img/esperimento2_foto2.jpg" data-lightbox="cartella2" data-title="Foto Esperimento 2 - 2">Foto 2</a></li>
-  </ul>
+  
 
 
 
