@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Galleria</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+
+	<style type = "text/css">
+	.cella{
+		background-color: #aaffff;
+		padding: 5px 25px;
+		width: 38%;
+		text-align: center;
+	}
+	 
+    body {
+      background-color: white;
+      font-family: inherit; 
+      margin: 20px;
+      color: black;
+    }
+    
+    h3 {
+      color: #005f99;
+      cursor: pointer;
+      margin-top: 1.5em;
+      border: 1px solid #005f99;
+      border-radius: 6px;
+      padding: 10px;
+      background: #e6f0fa;
+      user-select: none;
+    }
+    .foto-list {
+      margin: 10px 0 20px 20px;
+      display: none;
+      list-style: none;
+      padding-left: 0;
+    }
+    .foto-list li {
+      margin: 5px 0;
+      cursor: pointer;
+      color: #005f99;
+      text-decoration: underline;
+    }
+    .foto-list li:hover {
+      color: #003f66;
+    }    
+    h1 {
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-top: 30px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    .foto-list {
+	  display: none; /* chiuso inizialmente */
+	  list-style: none;
+	  padding-left: 0;
+	  gap: 10px;
+	  margin: 10px 0 20px 0;
+	  flex-wrap: wrap; /* se tante immagini, vanno a capo */
+	}
+
+	.foto-list li {
+	  margin: 0;
+	}
+
+	.thumb {
+	  width: 100px;
+	  height: auto;
+	  border-radius: 4px;
+	  transition: transform 0.3s ease;
+	}
+
+	.foto-list li a:hover .thumb {
+	  transform: scale(1.5);
+	  z-index: 10;
+	  position: relative;
+	  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+	}
+
+
+  </style>
+</head>
+	
+<body bgcolor="#ffffff">
+
+
+  <table   cellpadding=5 cellspacing=0 cols=2 border=0 width=100%>
+  	<tr valign=top>
+  		<td  class="cella" >
+		<h2 style="font-size: 30px;">Lorenzo Mauro Sabatino</h2>
+		<h4 style="font-size: 45px;"><b>Galleria fotografica</b></h4>
+		<div style="margin-bottom: 15px; margin-top: 15px; padding: 1px">
+	        <a href="index.html" style="text-decoration: none; font-size: 14px; font-family: times new roman, serif; color: black;">
+	          <i class="fas fa-home" style="font-size: 18px; color: black; vertical-align: middle;"></i>
+	          <span style="margin-left: 6px;">Torna alla pagina principale</span>
+	        </a>
+        </div>
+      </td>
+  	</tr>
+  </table>
+
+
+  <h3 onclick="toggleFolder('cartella1')">Foto generali del laboratorio</h3>
+	<ul id="cartella1" class="foto-list">
+	  <li><a href="foto/foto_galleria/IMG_0830.jpeg" data-lightbox="cartella1" data-title="Foto Esperimento 1 - 1"><img src="foto/foto_galleria/IMG_0830.jpeg" alt="Foto 1" class="thumb" /></a></li>
+	  <li><a href="foto/foto_galleria/IMG_0831.jpeg" data-lightbox="cartella1" data-title="Foto Esperimento 1 - 2"><img src="foto/foto_galleria/IMG_0831.jpeg" alt="Foto 2" class="thumb" /></a></li>
+	  <li><a href="foto/foto_galleria/IMG_0961.WEBP" data-lightbox="cartella1" data-title="Foto Esperimento 1 - 2"><img src="foto/foto_galleria/IMG_0961.WEBP" alt="Foto 2" class="thumb" /></a></li>
+	</ul>
+
+
+    
+    <h3 onclick="toggleFolder('cartella_bis')">prova</h3>
+	<ul id="cartella_bis" class="foto-list">
+	  <li>
+	    <a href="img/esperimento1_foto1.jpg" data-lightbox="cartella_bis" data-title="Foto Esperimento 1bis">
+	      <img src="foto/gli-urti.png" alt="Foto 1" class="thumb" /></a>
+	  </li>
+	<!-- altre foto -->
+	
+
+  </ul>
+
+  <h3 onclick="toggleFolder('cartella2')">Cartella Esperimenti 2</h3>
+  <ul id="cartella2" class="foto-list">
+    <li><a href="img/esperimento2_foto1.jpg" data-lightbox="cartella2" data-title="Foto Esperimento 2 - 1">Foto 1</a></li>
+    <li><a href="img/esperimento2_foto2.jpg" data-lightbox="cartella2" data-title="Foto Esperimento 2 - 2">Foto 2</a></li>
+  </ul>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
+  <script>
+    function toggleFolder(id) {
+      const folder = document.getElementById(id);
+      if (folder.style.display === 'flex') {
+        folder.style.display = 'none';
+      } else {
+        folder.style.display = 'flex';
+      }
+    }
+  </script>
+
+</body>
+</html>
