@@ -107,7 +107,7 @@
     <div>Errore:</div>
     <div id="error">0.00 s</div>
     <label>Errore sistematico (%):
-      <input type="number" id="erroreInput" value="2" step="0.1">
+      <input type="number" id="erroreInput" value="10" step="0.1">
     </label>
     <small>Positivo = guadagna tempo, negativo = perde tempo</small>
   </details>
@@ -120,7 +120,7 @@
     let startTime, timerInterval;
     let running = false;
     let elapsed = 0;
-    let erroreSistematico = 0.02;
+    let erroreSistematico = 0.10;
 
     document.getElementById("erroreInput").addEventListener("input", () => {
       erroreSistematico = parseFloat(document.getElementById("erroreInput").value) / 100;
@@ -201,3 +201,4 @@
 	</footer>
 </body>
 </html>
+
