@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cronometro - Laboratorio di Fisica</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      background-color: white;
+      font-family: inherit;
+      margin: 20px;
+      color: black;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+     h2 {
+      margin-top: 30px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    #display {
+      font-size: 3rem;
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: inline-block;
+      min-width: 180px;
+    }
+    button {
+      font-size: 1rem;
+      margin: 5px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 0.5rem;
+      background-color: #3b82f6;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    details {
+      background-color: #f0f0f0;
+      padding: 10px 15px;
+      border-radius: 5px;
+      width: 300px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    summary {
+      font-weight: bold;
+      cursor: pointer;
+    }
+    label, input, small {
+      display: block;
+      margin-top: 5px;
+    }
+    input {
+      width: 80px;
+      padding: 5px;
+      border-radius: 0.3rem;
+      border: 1px solid #ccc;
+    }
+    a.home-link {
+      display: inline-block;
+      margin-top: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #006699;
+    }
+    a.home-link:hover {
+      text-decoration: underline;
+    }
+    .back-link {
+      margin-top: 50px;
+      text-align: center;
+    }
+    .back-link a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #006699;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cronometro - Laboratorio di Fisica</h1>
+
+  <div id="display">00:00.00</div>
+  <div>
+    <button onclick="startTimer()">Avvia</button>
+    <button onclick="stopTimer()">Stop</button>
+    <button onclick="resetTimer()">Reset</button>
+  </div>
+
+  <details>
+    <summary>Dettagli avanzati</summary>
+    <div>Tempo reale:</div>
+    <div id="realTime">00:00.00</div>
+    <div>Errore:</div>
+    <div id="error">0.00 s</div>
+    <label>Errore sistematico (%):
+      <input type="number" id="erroreInput" value="2" step="0.1">
+    </label>
+    <small>Positivo = guadagna tempo, negativo = perde tempo</small>
+  </details>
+
+  <div class="back-link">
+    <a href="classe1a.html">&larr; Torna a Classe 1a</a>
+  </div>
+
+  <script>
+    let startTime, timerInterval;
+    let running = false;
+    let elapsed = 0;
+    let erroreSistematico = 0.02;
+
+    document.getElementById("erroreInput").addEventListener("input", () => {
+      erroreSistematico = parseFloat(document.getElementById("erroreInput").value) / 100;
+    });
+
+    function updateDisplay() {
+      const now = Date.now();
+      let diff = (now - startTime + elapsed)/1000;
+      diff = diff * (1 + erroreSistematico);
+
+      const minutes = Math.floor(diff / 60);
+      const seconds = Math.floor(diff % 60);
+      const centiseconds = Math.floor((diff*100)%100);
+
+      document.getElementById("display").textContent =
+        String(minutes).padStart(2,'0') + ":" +
+        String(seconds).padStart(2,'0') + "." +
+        String(centiseconds).padStart(2,'0');
+    }
+
+    function startTimer() {
+      if(!running) {
+        startTime = Date.now();
+        timerInterval = setInterval(updateDisplay,10);
+        running = true;
+      }
+    }
+
+    function stopTimer() {
+      if(running) {
+        clearInterval(timerInterval);
+        elapsed += Date.now() - startTime;
+        running = false;
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      running = false;
+      elapsed = 0;
+      document.getElementById("display").textContent = "00:00.00";
+      document.getElementById("realTime").textContent = "00:00.00";
+      document.getElementById("error").textContent = "0.00 s";
+    }
+
+    setInterval(() => {
+      if(running){
+        const now = Date.now();
+        let realDiff = (now - startTime + elapsed)/1000;
+        let diff = realDiff * (1 + erroreSistematico);
+
+        const minutes = Math.floor(realDiff / 60);
+        const seconds = Math.floor(realDiff % 60);
+        const centiseconds = Math.floor((realDiff*100)%100);
+        document.getElementById("realTime").textContent =
+          String(minutes).padStart(2,'0') + ":" +
+          String(seconds).padStart(2,'0') + "." +
+          String(centiseconds).padStart(2,'0');
+
+        document.getElementById("error").textContent = (diff - realDiff).toFixed(2) + " s";
+      }
+    },100);
+  </script>
+  
+   <hr>
+	<h4 style="text-align: left;">Crediti e link esterni</h4>
+	<p style="font-size: small; color: gray; text-align: left;">
+	  Alcuni materiali collegati da questo sito sono stati trovati online su siti scolastici o pubblici.
+	  Se sei autore di uno dei contenuti e desideri che venga rimosso il collegamento, ti prego di contattarmi (<a href="mailto:lorenzo.sabatino@collegifacec.it">lorenzo.sabatino@collegifacec.it</a>).
+	  I link rimandano a risorse esterne non gestite direttamente da me.
+	</p>
+
+<h2></h2>	
+
+	<footer style="font-size: 12px; color: gray; text-align: center; margin-top: 50px;">
+	  Ultimo aggiornamento: settembre 2025 <br>
+	  Tutti i visitatori sono invitati a <a href="mailto:lorenzo.sabatino@collegifacec.it">segnalarmi</a> eventuali problemi (tipo link che non funzionano).
+	</footer>
+</body>
+</html>
