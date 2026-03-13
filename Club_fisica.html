@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Ma cosa vuoi leggere esci da qui grazie :) -->
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<title>Laboratorio di Fisica</title>
+
+
+<style type="text/css">
+
+body{
+  background-color:white;
+  margin:20px;
+  font-family:Times New Roman, serif;
+}
+
+/* HEADER */
+
+.header{
+  background-color:#aaffff;
+  padding:15px 25px;
+  display:flex;
+  align-items:center;
+  margin-bottom:30px;
+}
+
+.header-left{
+  text-align:center;
+  width:100%;
+}
+
+.home-link{
+  margin-top:6px;
+  font-size:14px;
+}
+
+.header{
+  background-color:#aaffff;
+  padding:15px 25px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:40px;
+  margin-bottom:30px;
+}
+
+.home-link a{
+  text-decoration:none;
+  color:black;
+}
+
+.home-link a:hover{
+  text-decoration:underline;
+}
+
+.header-logo img{
+  margin-left:auto;
+  width:80px;
+  
+}
+
+/* PARAGRAFI */
+
+.paragrafo{
+  color:#000000;
+  margin-left:30px;
+}
+
+/* TABELLE */
+
+.materiali-tabella{
+  margin-left:20px;
+}
+
+/* CLASSI */
+
+.cella-classe{
+  border:2px solid black;
+  padding:10px;
+  text-align:center;
+  font-size:20px;
+}
+
+.cella-classe a{
+  text-decoration:none;
+  color:red;
+  font-weight:bold;
+}
+
+.cella-classe a:hover{
+  color:darkred;
+}
+
+.cella-classe:hover{
+  background-color:#ffff7f;
+  color:black;
+  box-shadow:0 0 10px rgba(0,0,0,0.5);
+  transition:background-color 0.3s, box-shadow 0.3s;
+}
+
+.cella-classe:hover a{
+  color:black;
+}
+
+/* TITOLI */
+
+h2{
+  margin-top:30px;
+  border-bottom:1px solid #ccc;
+  padding-bottom:5px;
+}
+
+ul{
+  margin-left:20px;
+  list-style-type:disc;
+}
+
+li{
+  margin-bottom:8px;
+}
+
+/* BOTTONE */
+
+.bottone{
+  display:inline-block;
+  margin-top:15px;
+  padding:10px 14px;
+  background-color:#aaffff;
+  text-decoration:none;
+  color:black;
+  font-weight:bold;
+  border:1px solid black;
+}
+
+.bottone:hover{
+  background-color:#88ddff;
+}
+
+/* FOOTER */
+
+footer{
+  font-size:12px;
+  color:gray;
+  text-align:center;
+  margin-top:50px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width:700px){
+
+.header{
+  flex-direction:column;
+  text-align:center;
+  gap:10px;
+}
+
+.header-logo img{
+  width:60px;
+}
+
+.materiali-tabella{
+  display:block;
+}
+
+.materiali-tabella tr{
+  display:block;
+}
+
+.materiali-tabella td{
+  display:block;
+  width:100%;
+  margin-bottom:20px;
+}
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+  <div class="header-left">
+    <h1>Club Scientifico: esperienze di fisica</h1>
+
+    <div class="home-link">
+      <a href="index.html">&larr; Torna alla pagina principale</a>
+    </div>
+  </div>
+
+  <div class="header-logo">
+    <img src="Club/logoClub_nosfondo.png">
+  </div>
+
+</div>
+
+
+
+<h2 style="color:#ff0000;">Qualche informazione</h2>
+
+<p class="paragrafo">
+
+In questa sezione del sito mi piacerebbe raccogliere le esperienze di Fisica svolte nell'ambito del Club Scientifico: esperimenti, uscite, attività, approfondimenti e lezioni.
+
+<br><br>...
+
+</p>
+
+
+
+<h3>La costante di Planck (6 marzo 2026)</h3>
+
+<p class="paragrafo">
+
+L'esperimento realizzato ha avuto come scopo ottenere sperimentalmente la costante di Planck.  
+Di seguito si riportano i file Excel di template e il file con i risultati ottenuti insieme (compatibili con il valore teorico!).  
+Trovate anche la presentazione (molto grezza, con proprio l'essenziale) della spiegazione fatta in laboratorio.
+
+</p>
+
+
+
+<table class="materiali-tabella">
+<tr>
+<td>
+
+<ul>
+
+<li><a href="Club/Planck/Esperimento Planck.xlsx" target="_blank">Template file Excel</a></li>
+
+<li><a href="Club/Planck/Planck risultati.xlsx" target="_blank">Risultati ottenuti (Excel)</a></li>
+
+<li><a href="Club/Planck/La misura della costante di Planck.pdf" target="_blank">Presentazione esperimento (pdf)</a></li>
+
+</ul>
+
+</td>
+</tr>
+</table>
+
+
+
+<a href="galleria.html">📷 Clicca qui per vedere le foto della giornata</a>
+
+
+
+<footer>
+
+Ultimo aggiornamento: marzo 2026 <br>
+
+Tutti i visitatori sono invitati a  
+<a href="mailto:lorenzo.sabatino@collegifacec.it">segnalarmi</a> eventuali problemi (tipo link che non funzionano).
+
+</footer>
+
+
+</body>
+</html>
