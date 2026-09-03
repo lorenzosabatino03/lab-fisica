@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Lancio Parabolico — Analisi Video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEEE6;
+    --paper-line: rgba(60,70,60,0.08);
+    --ink:#1E2420;
+    --ink-soft:#5B655D;
+    --panel:#1B2320;
+    --panel-line:#33403A;
+    --phosphor:#5FBE84;
+    --phosphor-dim: rgba(95,190,132,0.18);
+    --amber:#D98F4B;
+    --amber-dim: rgba(217,143,75,0.18);
+    --white-ish:#F4F5F0;
+    --danger:#C6604A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--paper-line) 1px, transparent 1px) 0 0/100% 28px,
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px) 0 0/28px 100%,
+      var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  header{
+    padding:34px 20px 18px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  header h1{
+    font-family:'Source Serif 4', serif;
+    font-weight:700;
+    font-size:clamp(28px,4vw,40px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:15px;
+    max-width:62ch;
+    line-height:1.5;
+  }
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+
+  /* ---------- upload zone ---------- */
+  #dropzone{
+    margin-top:22px;
+    border:1.5px dashed var(--panel-line);
+    border-radius:4px;
+    background:rgba(255,255,255,0.35);
+    padding:46px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  #dropzone.drag{
+    border-color:var(--phosphor);
+    background:var(--phosphor-dim);
+  }
+  #dropzone p{
+    margin:0 0 14px;
+    color:var(--ink-soft);
+    font-size:15px;
+  }
+  #dropzone .pick-btn{
+    display:inline-block;
+  }
+  #fileInput{display:none;}
+
+  /* ---------- workspace ---------- */
+  #workspace{display:none; margin-top:26px;}
+  #workspace.active{display:block;}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap:18px;
+    align-items:start;
+  }
+  @media (max-width: 860px){
+    .grid{grid-template-columns:1fr;}
+  }
+
+  .stage{
+    background:var(--panel);
+    border-radius:6px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 1px 0 rgba(0,0,0,0.15) inset;
+  }
+  .stage-inner{
+    position:relative;
+    width:100%;
+    line-height:0;
+  }
+  video{
+    width:100%;
+    display:block;
+    background:#000;
+  }
+  canvas#overlay{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    touch-action:none;
+  }
+
+  .transport{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 14px;
+    border-bottom:1px solid var(--panel-line);
+    flex-wrap:wrap;
+  }
+  .transport button{
+    background:transparent;
+    border:1px solid var(--panel-line);
+    color:var(--white-ish);
+    border-radius:4px;
+    width:36px; height:32px;
+    font-size:14px;
+    cursor:pointer;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .transport button:hover{border-color:var(--phosphor);}
+  .transport input[type=range]{
+    flex:1;
+    min-width:100px;
+    accent-color:var(--phosphor);
+  }
+  .readout{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--phosphor);
+    font-size:13px;
+    min-width:150px;
+    text-align:right;
+  }
+  .fps-field{
+    display:flex; align-items:center; gap:6px;
+    color:var(--ink-soft);
+    font-size:12px;
+    padding:0 14px 12px;
+  }
+  .fps-field input{
+    width:64px;
+    font-family:'IBM Plex Mono', monospace;
+    background:var(--panel);
+    color:var(--white-ish);
+    border:1px solid var(--panel-line);
+    border-radius:3px;
+    padding:4px 6px;
+  }
+
+  /* ---------- side panel ---------- */
+  .panel{
+    background:rgba(255,255,255,0.4);
+    border:1px solid var(--paper-line);
+    border-radius:6px;
+    padding:18px;
+  }
+  .panel h2{
+    font-family:'Source Serif 4', serif;
+    font-size:16px;
+    margin:0 0 12px;
+    font-weight:600;
+  }
+  .mode-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .mode-btn{
+    border:1px solid var(--panel-line);
+    background:var(--panel);
+    color:var(--white-ish);
+    padding:10px 8px;
+    border-radius:4px;
+    font-size:13px;
+    cursor:pointer;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:500;
+    text-align:left;
+    transition:border-color .15s ease;
+  }
+  .mode-btn small{
+    display:block;
+    color:var(--ink-soft);
+    font-weight:400;
+    font-size:11px;
+    margin-top:2px;
+  }
+  .mode-btn.active{
+    border-color:var(--phosphor);
+    background:var(--phosphor-dim);
+    color:var(--ink);
+  }
+  .mode-btn.active small{color:var(--ink-soft);}
+
+  .status-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    padding:7px 0;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .status-row span:first-child{color:var(--ink-soft);}
+  .status-row span:last-child{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+  }
+  .status-row .ok{color:var(--phosphor);}
+  .status-row .warn{color:var(--amber);}
+
+  #pointsList{
+    max-height:180px;
+    overflow-y:auto;
+    margin:12px 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+  }
+  .point-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:5px 6px;
+    border-radius:3px;
+  }
+  .point-row:nth-child(odd){background:rgba(0,0,0,0.03);}
+  .point-row button{
+    background:none;
+    border:none;
+    color:var(--danger);
+    cursor:pointer;
+    font-size:14px;
+    padding:0 4px;
+  }
+  .empty-note{
+    color:var(--ink-soft);
+    font-size:12.5px;
+    padding:8px 2px;
+  }
+
+  .actions{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .actions button{
+    flex:1;
+    padding:10px 10px;
+    border-radius:4px;
+    border:1px solid var(--panel-line);
+    background:var(--panel);
+    color:var(--white-ish);
+    font-size:13px;
+    cursor:pointer;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:500;
+  }
+  .actions button.primary{
+    background:var(--phosphor);
+    border-color:var(--phosphor);
+    color:#0E1512;
+  }
+  .actions button:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+
+  #log{
+    margin-top:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    background:rgba(0,0,0,0.03);
+    border-radius:4px;
+    padding:8px 10px;
+    min-height:20px;
+    line-height:1.5;
+  }
+  #log .hl{color:var(--ink); font-weight:600;}
+
+  /* ---------- results ---------- */
+  #results{
+    display:none;
+    margin-top:26px;
+    background:rgba(255,255,255,0.4);
+    border:1px solid var(--paper-line);
+    border-radius:6px;
+    padding:20px;
+  }
+  #results.active{display:block;}
+  #results h2{
+    font-family:'Source Serif 4', serif;
+    font-size:19px;
+    margin:0 0 14px;
+  }
+  #summaryBlock{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    line-height:1.7;
+    background:var(--panel);
+    color:var(--white-ish);
+    border-radius:5px;
+    padding:16px 18px;
+    margin:0 0 22px;
+    white-space:pre;
+    overflow-x:auto;
+  }
+  #summaryBlock .g{color:var(--phosphor);}
+  #summaryBlock .a{color:var(--amber);}
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+    gap:12px;
+    margin-bottom:22px;
+  }
+  .kpi{
+    background:var(--panel);
+    border-radius:5px;
+    padding:12px 14px;
+  }
+  .kpi .label{color:var(--ink-soft); font-size:11.5px; text-transform:none;}
+  .kpi .label{color:#9AA69E;}
+  .kpi .value{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--phosphor);
+    font-size:19px;
+    margin-top:4px;
+  }
+  .charts{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  @media (max-width: 700px){ .charts{grid-template-columns:1fr;} }
+  .chart-box{background:#fff; border:1px solid var(--paper-line); border-radius:5px; padding:10px;}
+  .chart-box{background:#fff; border:1px solid var(--paper-line); border-radius:5px; padding:10px; position:relative; overflow:hidden;}
+  .chart-box canvas{width:100%!important; height:100%!important; display:block;}
+  .chart-box-traj{ justify-self:center; }
+  .resize-handle{    position:absolute; right:3px; bottom:3px;
+    width:16px; height:16px;
+    cursor:nwse-resize;
+    background:
+      linear-gradient(135deg, transparent 0 40%, var(--ink-soft) 40% 46%, transparent 46% 60%, var(--ink-soft) 60% 66%, transparent 66% 80%, var(--ink-soft) 80% 86%, transparent 86%);
+    opacity:0.5;
+    touch-action:none;
+    z-index:5;
+  }
+  .resize-handle:hover{opacity:0.9;}
+  .reset-chart-btn{
+    position:absolute; left:4px; top:4px; z-index:5;
+    width:22px; height:22px; border-radius:3px;
+    border:1px solid var(--panel-line);
+    background:rgba(255,255,255,0.85);
+    color:var(--ink-soft);
+    font-size:13px; line-height:1;
+    cursor:pointer;
+  }
+  .reset-chart-btn:hover{ color:var(--ink); border-color:var(--ink-soft); }
+
+  footer{
+    max-width:1100px;
+    margin:40px auto 0;
+    padding:16px 20px 0;
+    border-top:1px solid var(--paper-line);
+    color:var(--ink-soft);
+    font-size:12px;
+    line-height:1.6;
+  }
+
+  .back-link {
+      margin-top: 50px;
+      text-align: center;
+  }
+  .pick-btn, .instructions-btn{
+    background:var(--panel);
+    color:var(--white-ish);
+    border:none;
+    border-radius:4px;
+    padding:11px 18px;
+    font-size:14px;
+    cursor:pointer;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:500;
+  }
+.intestazione {
+    font-family: "Times New Roman", Times, serif;
+    background-color: #aaffff;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+}
+
+.intestazione h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.intestazione h4 {
+    margin: 4px 0;
+    font-size: 18px;
+}
+
+.intestazione h1 {
+    margin: 8px 0 15px 0;
+    font-size: 32px;
+}
+
+.intestazione a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+}
+</style>
+
+</head>
+
+
+<body>
+
+<div class="intestazione">
+    <div>
+        <h1>Lorenzo Mauro Sabatino</h1>
+        <h4>Laboratorio di Fisica</h4>
+    
+    </div>
+</div>
+
+<header>
+  <h1>Moti nel piano</h1>
+  <p>Qui potrai caricare un video di un lancio parabolico o di una caduta e studarne gli aspetti fisici del moto. Puoi calibrare la scala, mettere gli assi, segnare la traiettoria fotogramma per fotogramma e ricavare velocità, angolo di lancio e accelerazione. Il video resta sul tuo dispositivo: non viene caricato su nessun server.</p>
+  <br>
+  <p>Ho realizzato questo semplice programmino con l'aiuto dell'IA — Claude per la precisione — a dimostrazione che un suo saggio utilizzo può essere utile e stimolante.  </p>
+</header>
+
+
+
+<main>
+
+  <div id="dropzone">
+    <p>Trascina qui un file video, oppure</p>
+    <button class="pick-btn" id="pickBtn">Scegli un video</button>
+    <input type="file" id="fileInput" accept="video/*">
+  </div>
+
+  <div id="workspace">
+    <div class="grid">
+
+      <!-- ===== stage ===== -->
+      <div class="stage">
+        <div class="transport">
+          <button id="stepBackBig" title="Indietro 10 fotogrammi">«</button>
+          <button id="stepBack" title="Fotogramma precedente (A / ←)">‹</button>
+          <button id="playBtn" title="Play/Pausa (spazio)">▶</button>
+          <button id="stepFwd" title="Fotogramma successivo (D / →)">›</button>
+          <button id="stepFwdBig" title="Avanti 10 fotogrammi">»</button>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1">
+          <span class="readout" id="timeReadout">t = 0.000 s</span>
+        </div>
+        <div class="fps-field">
+          fps del filmato:
+          <input type="number" id="fpsInput" value="30" min="1" step="0.001">
+          &nbsp;&nbsp;passo ‹/›:
+          <input type="number" id="stepSmall" value="1" min="1" step="1">
+          &nbsp;&nbsp;passo «/»:
+          <input type="number" id="stepBig" value="10" min="1" step="1">
+          <span style="color:var(--ink-soft)">fotogrammi — tastiera: A/D o ←/→, Shift per il salto grande, spazio per play/pausa</span>
+        </div>
+        <div class="stage-inner">
+          <video id="video" playsinline webkit-playsinline preload="metadata" muted></video>
+          <canvas id="overlay"></canvas>
+        </div>
+      </div>
+
+      <!-- ===== side panel ===== -->
+      <div class="panel">
+        <h2>Modalità di misura</h2>
+        <div class="mode-grid">
+          <button class="mode-btn" data-mode="axes">Assi<small>origine e direzione</small></button>
+          <button class="mode-btn" data-mode="calib">Calibrazione<small>scala px → m</small></button>
+          <button class="mode-btn" data-mode="traj">Traiettoria<small>un punto/fotogramma</small></button>
+          <button class="mode-btn" data-mode="dist">Distanza<small>2 punti</small></button>
+          <button class="mode-btn" data-mode="angle">Angolo<small>3 punti: vertice e lati</small></button>
+        </div>
+
+        <div class="status-row"><span>Calibrazione</span><span id="statCalib" class="warn">non impostata</span></div>
+        <div class="status-row"><span>Punti traiettoria</span><span id="statPoints">0</span></div>
+
+        <h2 style="margin-top:16px;">Punti registrati</h2>
+        <div id="pointsList"><div class="empty-note">Nessun punto ancora.</div></div>
+
+        <div class="actions">
+          <button id="analyzeBtn" disabled>Analizza</button>
+          <button id="exportBtn" disabled>Esporta CSV</button>
+        </div>
+        <div class="actions">
+          <button id="clearBtn", >Azzera tutto</button>
+        </div>
+
+        <div id="log">Scegli una modalità, poi tocca/clicca sul video.</div>
+      </div>
+    </div>
+
+    <!-- ===== results ===== -->
+    <div id="results">
+      <h2>Risultati</h2>
+      <pre id="summaryBlock">—</pre>
+      <div class="charts">
+        <div class="chart-box chart-box-traj"><canvas id="chartTraj"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
+        <div class="chart-box"><canvas id="chartV"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
+        <div class="chart-box"><canvas id="chartX"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
+        <div class="chart-box"><canvas id="chartY"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+ <div class="back-link">
+    <a href="index.html">&larr; Torna alla pagina principale</a>
+  </div>
+  
+ 
+
+<footer>
+  Strumento didattico per il laboratorio di fisica — nessun dato lascia il browser. Tocca due punti a distanza nota per calibrare, poi segna la posizione del proiettile su ogni fotogramma in modalità "Traiettoria". Ultimo aggiornamento: settembre 2026. Tutti i visitatori sono invitati a <a href="mailto:lorenzo.sabatino@collegifacec.it">segnalarmi</a> eventuali problemi (tipo link che non funzionano).
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  // sfondo bianco dietro ad ogni grafico: senza questo, il PNG salvato
+  // con "salva immagine" ha lo sfondo trasparente
+  Chart.register({
+    id: 'whiteBackground',
+    beforeDraw: (chart) => {
+      const ctx = chart.canvas.getContext('2d');
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    }
+  });
+
+  //zoom grafici
+  function zoomConfig(square){
+    const cfg = {
+      pan:{ enabled:true, mode:'xy' },
+      zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'xy' },
+      limits:{ x:{minRange:1e-6}, y:{minRange:1e-6} }
+    };
+    if(square){
+      cfg.onZoomComplete = ({chart})=>enforceEqualAspect(chart);
+      cfg.onPanComplete = ({chart})=>enforceEqualAspect(chart);
+    }
+    return cfg;
+  }
+  function enforceEqualAspect(chart){
+    const xs = chart.scales.x, ys = chart.scales.y;
+    const r = Math.max(xs.max-xs.min, ys.max-ys.min);
+    const cx = (xs.max+xs.min)/2, cy = (ys.max+ys.min)/2;
+    chart.options.scales.x.min = cx-r/2; chart.options.scales.x.max = cx+r/2;
+    chart.options.scales.y.min = cy-r/2; chart.options.scales.y.max = cy+r/2;
+    chart.update('none');
+  }
+
+  // ---------- elementi ----------
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const pickBtn = document.getElementById('pickBtn');
+  const workspace = document.getElementById('workspace');
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+  const ctx = overlay.getContext('2d');
+
+  const playBtn = document.getElementById('playBtn');
+  const stepBack = document.getElementById('stepBack');
+  const stepFwd = document.getElementById('stepFwd');
+  const stepBackBig = document.getElementById('stepBackBig');
+  const stepFwdBig = document.getElementById('stepFwdBig');
+  const scrub = document.getElementById('scrub');
+  const timeReadout = document.getElementById('timeReadout');
+  const fpsInput = document.getElementById('fpsInput');
+
+  const modeBtns = Array.from(document.querySelectorAll('.mode-btn'));
+  const statCalib = document.getElementById('statCalib');
+  const statPoints = document.getElementById('statPoints');
+  const pointsListEl = document.getElementById('pointsList');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const logEl = document.getElementById('log');
+
+  const resultsBox = document.getElementById('results');
+  const summaryBlock = document.getElementById('summaryBlock');
+
+  // ---------- stato ----------
+  let mode = null;               // 'calib' | 'traj' | 'dist' | 'angle'
+  let scalaMPerPx = null;        // metri per pixel
+  let calibTemp = [];
+  let distTemp = [];
+  let angleTemp = [];
+  let trajectory = [];           // {t, xpx, ypx}
+  let axisOrigin = null;         // [x,y] px nativi
+  let axisAngle = 0;             // radianti, in spazio immagine (y verso il basso)
+  let axisTemp = [];
+  let duration = 0;
+  let chartTraj = null, chartX = null, chartY = null, chartV = null;
+  let lastResult = null;         // ultimo {t,x,y,cx,cy,unita} calcolato, per aggiornare i grafici senza rianalizzare
+
+  function log(html){ logEl.innerHTML = html; }
+  function fps(){ return parseFloat(fpsInput.value) || 30; }
+
+  // ---------- caricamento video ----------
+  pickBtn.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('click', (e)=>{ if(e.target!==pickBtn) fileInput.click(); });
+  ['dragover','dragenter'].forEach(ev=>dropzone.addEventListener(ev, e=>{ e.preventDefault(); dropzone.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev, e=>{ e.preventDefault(); dropzone.classList.remove('drag'); }));
+  dropzone.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files[0];
+    if(f) loadVideo(f);
+  });
+  fileInput.addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(f) loadVideo(f);
+  });
+
+  function loadVideo(file){
+    const url = URL.createObjectURL(file);
+    video.src = url;
+    video.load();
+
+    function activateWorkspace(){
+      if(workspace.classList.contains('active')) return;
+      workspace.classList.add('active');
+      resizeOverlay();
+      draw();
+      log('Video caricato. Imposta l\'fps corretto se necessario, poi scegli "Calibrazione".');
+    }
+
+    video.addEventListener('loadedmetadata', activateWorkspace);
+    video.addEventListener('canplay', activateWorkspace);
+    video.addEventListener('loadeddata', activateWorkspace);
+
+    video.addEventListener('error', ()=>{
+      log('Non riesco a leggere questo video (formato non supportato dal browser). '+
+          'Su iPad prova a esportarlo in mp4 (H.264) prima di caricarlo, oppure registralo di nuovo con l\'app Fotocamera.');
+    });
+
+    setTimeout(()=>{
+      if(!workspace.classList.contains('active')){
+        log('Il video non si è ancora caricato. Se il file viene da iPad, prova a esportarlo/convertirlo in mp4 e ricaricalo.');
+      }
+    }, 4000);
+  }
+
+  video.addEventListener('durationchange', ()=>{
+    if(isFinite(video.duration) && video.duration>0){
+      duration = video.duration;
+      scrub.max = Math.round(duration*1000);
+    }
+  });
+
+  window.addEventListener('resize', resizeOverlay);
+  function resizeOverlay(){
+    overlay.width = video.clientWidth;
+    overlay.height = video.clientHeight;
+    draw();
+  }
+
+  // ---------- coordinate: canvas(display) -> pixel nativi del video ----------
+  function toNative(x, y){
+    const scaleX = video.videoWidth / overlay.width;
+    const scaleY = video.videoHeight / overlay.height;
+    return [x*scaleX, y*scaleY];
+  }
+  function toDisplay(x, y){
+    const scaleX = overlay.width / video.videoWidth;
+    const scaleY = overlay.height / video.videoHeight;
+    return [x*scaleX, y*scaleY];
+  }
+
+  function pointerPos(e){
+    const rect = overlay.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return [p.clientX-rect.left, p.clientY-rect.top];
+  }
+
+  // ---------- gestione click/tap ----------
+  overlay.addEventListener('pointerdown', e=>{
+    if(!mode) { log('Scegli prima una modalità (Calibrazione, Traiettoria, Distanza o Angolo).'); return; }
+    const [dx,dy] = pointerPos(e);
+    const [nx,ny] = toNative(dx,dy);
+
+    if(mode==='calib'){
+      calibTemp.push([nx,ny]);
+      if(calibTemp.length===2){
+        const distPx = Math.hypot(calibTemp[1][0]-calibTemp[0][0], calibTemp[1][1]-calibTemp[0][1]);
+        const val = prompt('Distanza reale tra i due punti in metri (usare il punto per la parte decimale:');
+        const distM = parseFloat(val);
+        if(!isNaN(distM) && distM>0){
+          scalaMPerPx = distM/distPx;
+          statCalib.textContent = scalaMPerPx.toFixed(6)+' m/px';
+          statCalib.className = 'ok';
+          log('Calibrazione impostata: <span class="hl">'+scalaMPerPx.toFixed(6)+' m/px</span>');
+        } else {
+          log('Calibrazione annullata (valore non valido).');
+        }
+        calibTemp = [];
+      }
+    }
+    else if(mode==='traj'){
+      const t = video.currentTime;
+      trajectory.push({t, xpx:nx, ypx:ny});
+      trajectory.sort((a,b)=>a.t-b.t);
+      renderPointsList();
+      log('Punto aggiunto a t = <span class="hl">'+t.toFixed(4)+'s</span>. Avanza di fotogramma e continua.');
+    }
+    else if(mode==='dist'){
+      distTemp.push([nx,ny]);
+      if(distTemp.length===2){
+        const distPx = Math.hypot(distTemp[1][0]-distTemp[0][0], distTemp[1][1]-distTemp[0][1]);
+        if(scalaMPerPx){
+          log('Distanza: <span class="hl">'+(distPx*scalaMPerPx).toFixed(4)+' m</span> ('+distPx.toFixed(1)+' px)');
+        } else {
+          log('Distanza: <span class="hl">'+distPx.toFixed(1)+' px</span> (nessuna calibrazione impostata)');
+        }
+        distTemp = [];
+      }
+    }
+    else if(mode==='angle'){
+      angleTemp.push([nx,ny]);
+      if(angleTemp.length===3){
+        const [v,a,b] = angleTemp;
+        const va=[a[0]-v[0], a[1]-v[1]], vb=[b[0]-v[0], b[1]-v[1]];
+        const na=Math.hypot(...va), nb=Math.hypot(...vb);
+        let cos = (va[0]*vb[0]+va[1]*vb[1])/(na*nb);
+        cos = Math.max(-1, Math.min(1, cos));
+        const deg = Math.acos(cos)*180/Math.PI;
+        log('Angolo: <span class="hl">'+deg.toFixed(2)+'°</span>');
+        angleTemp = [];
+      }
+    }
+    else if(mode==='axes'){
+      axisTemp.push([nx,ny]);
+      if(axisTemp.length===2){
+        axisOrigin = axisTemp[0];
+        const [ox,oy] = axisTemp[0];
+        const [px,py] = axisTemp[1];
+        axisAngle = Math.atan2(py-oy, px-ox);
+        log('Assi impostati: origine ('+Math.round(ox)+','+Math.round(oy)+'), direzione '+(axisAngle*180/Math.PI).toFixed(1)+'°');
+        axisTemp = [];
+      }
+    }
+    draw();
+  });
+
+  // ---------- modalità ----------
+  modeBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const m = btn.dataset.mode;
+      mode = (mode===m) ? null : m;
+      modeBtns.forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+      calibTemp=[]; distTemp=[]; angleTemp=[]; axisTemp=[];
+      const labels = {calib:'Calibrazione: tocca due punti a distanza nota.',
+                       traj:'Traiettoria: tocca la posizione del proiettile, poi avanza di fotogramma.',
+                       dist:'Distanza: tocca due punti.',
+                       angle:'Angolo: tocca il vertice, poi i due bracci.',
+                       axes:'Assi: tocca l\'origine, poi un punto sulla direzione dell\'asse x positivo.'};
+      log(mode ? labels[mode] : 'Modalità disattivata.');
+      draw();
+    });
+  });
+
+  // ---------- trasporto video ----------
+  playBtn.addEventListener('click', ()=>{
+    if(video.paused){ video.play(); playBtn.textContent='❚❚'; }
+    else { video.pause(); playBtn.textContent='▶'; }
+  });
+  video.addEventListener('ended', ()=>{ playBtn.textContent='▶'; });
+
+  function step(n){
+    video.pause(); playBtn.textContent='▶';
+    const dt = n/fps();
+    video.currentTime = Math.min(Math.max(video.currentTime+dt, 0), duration);
+  }
+  stepFwd.addEventListener('click', ()=>step(stepSmall()));
+  stepBack.addEventListener('click', ()=>step(-stepSmall()));
+  stepFwdBig.addEventListener('click', ()=>step(stepBig()));
+  stepBackBig.addEventListener('click', ()=>step(-stepBig()));
+
+  function stepSmall(){ return parseInt(document.getElementById('stepSmall').value) || 1; }
+  function stepBig(){ return parseInt(document.getElementById('stepBig').value) || 10; }
+
+  document.addEventListener('keydown', (e)=>{
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if(tag==='INPUT' || tag==='TEXTAREA') return;
+    if(!video.videoWidth) return;
+
+    if(e.code==='Space'){ e.preventDefault(); playBtn.click(); }
+    else if(e.key==='d' || e.key==='D' || e.key==='ArrowRight'){
+      e.preventDefault();
+      step((e.shiftKey || e.key==='D') ? stepBig() : stepSmall());
+    }
+    else if(e.key==='a' || e.key==='A' || e.key==='ArrowLeft'){
+      e.preventDefault();
+      step((e.shiftKey || e.key==='A') ? -stepBig() : -stepSmall());
+    }
+  });
+
+  scrub.addEventListener('input', ()=>{
+    video.pause(); playBtn.textContent='▶';
+    video.currentTime = scrub.value/1000;
+  });
+  video.addEventListener('timeupdate', ()=>{
+    scrub.value = Math.round(video.currentTime*1000);
+    timeReadout.textContent = 't = '+video.currentTime.toFixed(3)+' s   (fot. ~'+Math.round(video.currentTime*fps())+')';
+    draw();
+  });
+
+  // ---------- disegno overlay ----------
+  function draw(){
+    ctx.clearRect(0,0,overlay.width, overlay.height);
+    if(!video.videoWidth) return;
+
+    // colori overlay: molto accesi per essere ben visibili sul video
+    const COLORS = {
+      traj: '#FF2020',    // rosso acceso
+      calib: '#FFD400',   // giallo acceso
+      dist: '#FF00D4',    // magenta acceso
+      angle: '#00E5FF',   // ciano acceso
+      axes: '#7CFF00'     // verde lime acceso
+    };
+
+    // punti traiettoria
+    trajectory.forEach(p=>{
+      const [dx,dy] = toDisplay(p.xpx, p.ypx);
+      const isCurrent = Math.abs(p.t - video.currentTime) < (0.5/fps());
+
+      // alone scuro per aumentare il contrasto
+      ctx.beginPath();
+      ctx.arc(dx,dy, isCurrent?9:7, 0, 2*Math.PI);
+      ctx.fillStyle = '#111';
+      ctx.fill();
+
+      // punto rosso acceso
+      ctx.beginPath();
+      ctx.arc(dx,dy, isCurrent?7:5, 0, 2*Math.PI);
+      ctx.fillStyle = COLORS.traj;
+      ctx.fill();
+
+      // evidenzia il punto del fotogramma corrente
+      if(isCurrent){
+        ctx.beginPath();
+        ctx.arc(dx,dy,10,0,2*Math.PI);
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    });
+
+    // punti temporanei: calibrazione, distanza, angolo, assi
+    const tempSets = [
+      [calibTemp, COLORS.calib],
+      [distTemp, COLORS.dist],
+      [angleTemp, COLORS.angle],
+      [axisTemp, COLORS.axes]
+    ];
+
+    tempSets.forEach(([arr,color])=>{
+      arr.forEach(p=>{
+        const [dx,dy]=toDisplay(p[0],p[1]);
+
+        // bordo scuro
+        ctx.beginPath();
+        ctx.arc(dx,dy,8,0,2*Math.PI);
+        ctx.fillStyle='#111';
+        ctx.fill();
+
+        // punto acceso
+        ctx.beginPath();
+        ctx.arc(dx,dy,6,0,2*Math.PI);
+        ctx.fillStyle=color;
+        ctx.fill();
+      });
+
+      if(arr.length===2){
+        const [d1x,d1y]=toDisplay(arr[0][0],arr[0][1]);
+        const [d2x,d2y]=toDisplay(arr[1][0],arr[1][1]);
+
+        ctx.strokeStyle='#111';
+        ctx.lineWidth=4;
+        ctx.beginPath();
+        ctx.moveTo(d1x,d1y);
+        ctx.lineTo(d2x,d2y);
+        ctx.stroke();
+
+        ctx.strokeStyle=color;
+        ctx.lineWidth=2.5;
+        ctx.beginPath();
+        ctx.moveTo(d1x,d1y);
+        ctx.lineTo(d2x,d2y);
+        ctx.stroke();
+      }
+    });
+
+    // assi cartesiani di riferimento (solo visivi, non entrano nei calcoli)
+    if(axisOrigin){
+      const [dox,doy] = toDisplay(axisOrigin[0], axisOrigin[1]);
+      const extent = Math.max(overlay.width, overlay.height)*1.5;
+      ctx.save();
+      ctx.translate(dox,doy);
+      ctx.rotate(axisAngle);
+      ctx.strokeStyle = 'rgba(124,255,0,0.28)';
+      ctx.lineWidth = 1;
+      const spacing = 40;
+      for(let g=-extent; g<=extent; g+=spacing){
+        ctx.beginPath(); ctx.moveTo(g,-extent); ctx.lineTo(g,extent); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-extent,g); ctx.lineTo(extent,g); ctx.stroke();
+      }
+      ctx.strokeStyle = '#7CFF00';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(-extent,0); ctx.lineTo(extent,0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,-extent); ctx.lineTo(0,extent); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // ---------- lista punti ----------
+  function renderPointsList(){
+    statPoints.textContent = trajectory.length;
+    analyzeBtn.disabled = trajectory.length < 3;
+    exportBtn.disabled = trajectory.length === 0;
+    if(trajectory.length===0){
+      pointsListEl.innerHTML = '<div class="empty-note">Nessun punto ancora.</div>';
+      return;
+    }
+    pointsListEl.innerHTML = trajectory.map((p,i)=>
+      '<div class="point-row"><span>t='+p.t.toFixed(3)+'s  ('+Math.round(p.xpx)+','+Math.round(p.ypx)+')</span>'+
+      '<button data-i="'+i+'" title="Rimuovi">✕</button></div>'
+    ).join('');
+    pointsListEl.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        trajectory.splice(parseInt(b.dataset.i),1);
+        renderPointsList(); draw();
+      });
+    });
+  }
+
+  clearBtn.addEventListener('click', ()=>{
+    if(!confirm('Azzerare tutti i punti di traiettoria, la calibrazione e gli assi?')) return;
+    trajectory=[]; scalaMPerPx=null; calibTemp=[]; distTemp=[]; angleTemp=[]; axisTemp=[]; axisOrigin=null; axisAngle=0;
+    statCalib.textContent='non impostata'; statCalib.className='warn';
+    renderPointsList(); draw();
+    resultsBox.classList.remove('active');
+    log('Tutto azzerato.');
+  });
+
+  // ---------- regressione lineare / quadratica (minimi quadrati) ----------
+  function polyfit(x, y, degree){
+    // costruisce e risolve il sistema normale via eliminazione di Gauss
+    const n = x.length;
+    const A = [];
+    for(let i=0;i<n;i++){
+      const row=[];
+      for(let d=degree; d>=0; d--) row.push(Math.pow(x[i], d));
+      A.push(row);
+    }
+    const cols = degree+1;
+    const AtA = Array.from({length:cols}, ()=>new Array(cols).fill(0));
+    const Aty = new Array(cols).fill(0);
+    for(let i=0;i<n;i++){
+      for(let j=0;j<cols;j++){
+        Aty[j]+=A[i][j]*y[i];
+        for(let k=0;k<cols;k++) AtA[j][k]+=A[i][j]*A[i][k];
+      }
+    }
+    // Gauss elimination
+    for(let i=0;i<cols;i++){
+      let maxRow=i;
+      for(let k=i+1;k<cols;k++) if(Math.abs(AtA[k][i])>Math.abs(AtA[maxRow][i])) maxRow=k;
+      [AtA[i],AtA[maxRow]]=[AtA[maxRow],AtA[i]];
+      [Aty[i],Aty[maxRow]]=[Aty[maxRow],Aty[i]];
+      for(let k=i+1;k<cols;k++){
+        const f=AtA[k][i]/AtA[i][i];
+        for(let j=i;j<cols;j++) AtA[k][j]-=f*AtA[i][j];
+        Aty[k]-=f*Aty[i];
+      }
+    }
+    const coeff=new Array(cols).fill(0);
+    for(let i=cols-1;i>=0;i--){
+      let s=Aty[i];
+      for(let j=i+1;j<cols;j++) s-=AtA[i][j]*coeff[j];
+      coeff[i]=s/AtA[i][i];
+    }
+    return coeff; // ordine decrescente di potenza
+  }
+
+  function realCoords(){
+    const scala = scalaMPerPx || 1;
+    const t0 = trajectory[0].t;
+    const x0 = trajectory[0].xpx;
+    const y0 = trajectory[0].ypx;
+    const t = trajectory.map(p=>p.t-t0);
+    const x = trajectory.map(p=>(p.xpx-x0)*scala);
+    const y = trajectory.map(p=>-(p.ypx-y0)*scala); // y immagine verso il basso -> inverto
+    return {t,x,y, unita: scalaMPerPx ? 'm':'px'};
+  }
+
+  // ---------- analisi ----------
+  analyzeBtn.addEventListener('click', ()=>{
+    if(trajectory.length<3){ log('Servono almeno 3 punti di traiettoria.'); return; }
+    const {t,x,y,unita} = realCoords();
+
+    const cx = polyfit(t,x,1);       // [m, q]  x = m*t + q
+    const vx = cx[0];
+
+    const cy = polyfit(t,y,2);       // [a2, a1, a0]  y = a2*t^2 + a1*t + a0
+    const acc = 2*cy[0];
+    const vy0 = cy[1];
+
+    const v0 = Math.hypot(vx, vy0);
+    const angle = Math.atan2(vy0, vx)*180/Math.PI;
+
+    const gNote = (unita==='m')
+      ? '\n  (atteso g ~ -9.81 m/s^2, tara la calibrazione se il valore è molto diverso)'
+      : '';
+    summaryBlock.innerHTML =
+      pad('Velocità orizzontale vx', 32)+': <span class="g">'+signed(vx,4)+' '+unita+'/s</span>\n'+
+      pad('Velocità verticale iniziale vy0', 32)+': <span class="g">'+signed(vy0,4)+' '+unita+'/s</span>\n'+
+      pad('Velocità iniziale |v0|', 32)+': <span class="g">'+signed(v0,4)+' '+unita+'/s</span>\n'+
+      pad('Angolo di lancio', 32)+': <span class="g">'+signed(angle,2)+' gradi</span>\n'+
+      pad('Accelerazione verticale stimata', 32)+': <span class="a">'+signed(acc,4)+' '+unita+'/s^2</span>'+gNote;
+
+    resultsBox.classList.add('active');
+    lastResult = {t,x,y,cx,cy,unita};
+    drawCharts(t,x,y,cx,cy,unita);
+    resultsBox.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  const TRAJ_PADDING = 1.3; // margine attorno ai dati nel grafico traiettoria (scala 1:1)
+
+  function pad(label, width){
+    return label + ' '.repeat(Math.max(1, width-label.length));
+  }
+  function signed(n, dec){
+    const s = n.toFixed(dec);
+    return (n>=0 ? ' ' : '') + s;
+  }
+
+  function drawCharts(t,x,y,cx,cy,unita){
+    if(chartTraj) chartTraj.destroy();
+    if(chartX) chartX.destroy();
+    if(chartY) chartY.destroy();
+    if(chartV) chartV.destroy();
+    const tFit = [];
+    const N=40;
+    for(let i=0;i<=N;i++) tFit.push(t[0] + (t[t.length-1]-t[0])*i/N);
+    const xFit = tFit.map(ti=>cx[0]*ti+cx[1]);
+    const yFit = tFit.map(ti=>cy[0]*ti*ti+cy[1]*ti+cy[2]);
+
+    // traiettoria y(x) — scala identica sui due assi (come axis('equal') in
+    // matplotlib), altrimenti l'auto-scaling indipendente fa sembrare un moto
+    // quasi verticale quasi orizzontale (o viceversa)
+    const xMinD = Math.min(...x), xMaxD = Math.max(...x);
+    const yMinD = Math.min(...y), yMaxD = Math.max(...y);
+    const centerX = (xMinD+xMaxD)/2, centerY = (yMinD+yMaxD)/2;
+    const zoomPct = TRAJ_PADDING;
+    const halfRange = Math.max(xMaxD-xMinD, yMaxD-yMinD, 1e-6)/2 * zoomPct;
+
+    chartTraj = new Chart(document.getElementById('chartTraj').getContext('2d'), {
+      type:'scatter',
+      data:{ datasets:[{ label:'traiettoria y(x)', data: x.map((xi,i)=>({x:xi,y:y[i]})),
+        backgroundColor:'#FF2020', showLine:true, borderColor:'#FF2020', pointRadius:5, pointHoverRadius:7 }]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ title:{display:true, text:'Traiettoria y(x)'}, zoom:zoomConfig(false) },
+        scales:{
+          x:{ min:centerX-halfRange, max:centerX+halfRange, title:{display:true,text:'x ('+unita+')'} },
+          y:{ min:centerY-halfRange, max:centerY+halfRange, title:{display:true,text:'y ('+unita+')'} }
+        } }
+    });
+
+    // x(t)
+    chartX = new Chart(document.getElementById('chartX').getContext('2d'), {
+      type:'scatter',
+      data:{ datasets:[
+        {label:'dati', data:t.map((ti,i)=>({x:ti,y:x[i]})), backgroundColor:'#FF8C00', pointRadius:5, pointHoverRadius:7},
+        {label:'fit lineare', data:tFit.map((ti,i)=>({x:ti,y:xFit[i]})), showLine:true, borderColor:'#D98F4B', pointRadius:0, borderDash:[4,3]}
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ title:{display:true, text:'x(t)  →  vx = '+cx[0].toFixed(3)+' '+unita+'/s'}, zoom:zoomConfig(false) },
+        scales:{ x:{title:{display:true,text:'t (s)'}}, y:{title:{display:true,text:'x ('+unita+')'}} } }
+    });
+
+    // y(t)
+    chartY = new Chart(document.getElementById('chartY').getContext('2d'), {
+      type:'scatter',
+      data:{ datasets:[
+        {label:'dati', data:t.map((ti,i)=>({x:ti,y:y[i]})), backgroundColor:'#00CFFF', pointRadius:5, pointHoverRadius:7},
+        {label:'fit parabolico', data:tFit.map((ti,i)=>({x:ti,y:yFit[i]})), showLine:true, borderColor:'#5FBE84', pointRadius:0, borderDash:[4,3]}
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ title:{display:true, text:'y(t)  →  a = '+(2*cy[0]).toFixed(3)+' '+unita+'/s²'}, zoom:zoomConfig(false) },
+        scales:{ x:{title:{display:true,text:'t (s)'}}, y:{title:{display:true,text:'y ('+unita+')'}} } }
+    });
+
+    // velocità istantanee (differenze finite centrate)
+    const vxIst = gradient(t, x);
+    const vyIst = gradient(t, y);
+    chartV = new Chart(document.getElementById('chartV').getContext('2d'), {
+      type:'scatter',
+      data:{ datasets:[
+        {label:'vx(t)', data:t.map((ti,i)=>({x:ti,y:vxIst[i]})), showLine:true, borderColor:'#D98F4B', backgroundColor:'#FF8C00', pointRadius:5, pointHoverRadius:7},
+        {label:'vy(t)', data:t.map((ti,i)=>({x:ti,y:vyIst[i]})), showLine:true, borderColor:'#5FBE84', backgroundColor:'#5FBE84'}
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ title:{display:true, text:'Velocità istantanee (differenze finite)'}, zoom:zoomConfig(false) },
+        scales:{ x:{title:{display:true,text:'t (s)'}}, y:{title:{display:true,text:unita+'/s'}} } }
+    });
+
+    // collega ogni box del grafico al suo Chart.js, e assegna una
+    // dimensione iniziale (una sola volta) se il box non è già stato
+    // ridimensionato manualmente
+    chartsByBox.set(document.getElementById('chartTraj').closest('.chart-box'), chartTraj);
+    chartsByBox.set(document.getElementById('chartX').closest('.chart-box'), chartX);
+    chartsByBox.set(document.getElementById('chartY').closest('.chart-box'), chartY);
+    chartsByBox.set(document.getElementById('chartV').closest('.chart-box'), chartV);
+    chartsByBox.forEach((chart, box)=>{
+      initBoxSize(box);
+      makeResizable(box);
+      bindResetButton(box);
+    });
+  }
+
+  // ---------- ridimensionamento manuale dei grafici (maniglia d'angolo) ----------
+  const chartsByBox = new Map();
+
+  function initBoxSize(box){
+    if(box.dataset.sized) return;
+    const square = box.classList.contains('chart-box-traj');
+    const startHeight = 360;
+    if(square){
+      const s = Math.max(200, Math.min(box.offsetWidth, 420));
+      box.style.width = s+'px';
+      box.style.height = startHeight+'px';
+    } else {
+      const w = Math.max(320, box.offsetWidth);
+      box.style.width = w+'px';
+      box.style.height = startHeight+'px';
+    }
+    box.dataset.sized = '1';
+  }
+
+  function makeResizable(box){    const handle = box.querySelector('.resize-handle');
+    if(!handle || handle.dataset.bound) return;
+    handle.dataset.bound = '1';
+    const square = handle.dataset.square === 'true';
+
+    handle.addEventListener('pointerdown', e=>{
+      e.preventDefault(); e.stopPropagation();
+      handle.setPointerCapture(e.pointerId);
+      const startX = e.clientX, startY = e.clientY;
+      const startW = box.offsetWidth, startH = box.offsetHeight;
+      const rect = box.getBoundingClientRect();
+      const maxW = Math.max(180, window.innerWidth - rect.left - 16);
+      const maxH = Math.max(120, window.innerHeight - rect.top - 16);
+      const maxSquare = Math.min(maxW, maxH);
+
+      function onMove(ev){
+        const dw = ev.clientX-startX, dh = ev.clientY-startY;
+        let newW, newH;
+        if(square){
+          const d = Math.max(dw, dh);
+          newW = newH = Math.min(maxSquare, Math.max(120, startW+d));
+        } else {
+          newW = Math.min(maxW, Math.max(180, startW+dw));
+          newH = Math.min(maxH, Math.max(120, startH+dh));
+        }
+        box.style.width = newW+'px';
+        box.style.height = newH+'px';
+        const chart = chartsByBox.get(box);
+        if(chart) chart.resize();
+      }
+      function onUp(){
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+      }
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+    });
+  }
+
+  function bindResetButton(box){
+    const btn = box.querySelector('.reset-chart-btn');
+    if(!btn || btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', ()=>{
+      box.style.width = '';
+      box.style.height = '';
+      box.dataset.sized = '';
+      initBoxSize(box);
+      const chart = chartsByBox.get(box);
+      if(chart){ chart.resize(); chart.resetZoom(); }
+    });
+  }
+
+  // gradiente numerico (equivalente di numpy.gradient: differenze centrate
+  // all'interno, in avanti/indietro ai due estremi)
+  function gradient(t, y){
+    const n = t.length;
+    const g = new Array(n);
+    for(let i=0;i<n;i++){
+      if(i===0) g[i] = (y[1]-y[0])/(t[1]-t[0]);
+      else if(i===n-1) g[i] = (y[n-1]-y[n-2])/(t[n-1]-t[n-2]);
+      else g[i] = (y[i+1]-y[i-1])/(t[i+1]-t[i-1]);
+    }
+    return g;
+  }
+
+  // ---------- export CSV ----------
+  exportBtn.addEventListener('click', ()=>{
+    if(trajectory.length===0) return;
+    const {t,x,y,unita} = realCoords();
+    let csv = 'indice,t_s,x_'+unita+',y_'+unita+',x_px,y_px\n';
+    trajectory.forEach((p,i)=>{
+      csv += [i, t[i].toFixed(6), x[i].toFixed(6), y[i].toFixed(6), Math.round(p.xpx), Math.round(p.ypx)].join(',')+'\n';
+    });
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'traiettoria.csv';
+    a.click();
+  });
+
+  renderPointsList();
+})();
+</script>
+</body>
+</html>
