@@ -1198,15 +1198,17 @@
         if(!chart) return;
         const dataUrl = chart.toBase64Image('image/png', 1);
         const nomi = {
-		    chartTraj: 'Traiettoria.png',
-		    chartV: 'Velocita_vx_vy.png',
-		    chartX: 'Posizione_x_t.png',
-		    chartY: 'Posizione_y_t.png'
-		};
+          chartTraj: 'Traiettoria.png',
+          chartV: 'Velocita_vx_vy.png',
+          chartX: 'Posizione_x_t.png',
+          chartY: 'Posizione_y_t.png'
+        };
 
         // iOS/iPadOS: il download automatico con <a download> spesso non
-        // funziona in Safari. Si apre l'immagine in una nuova scheda,
-        // da cui l'utente può salvarla con "tieni premuto -> Salva immagine".
+        // funziona in Safari (l'anchor con href data:... e .click() non fa
+        // nulla in modo silenzioso, dando l'impressione che si "blocchi").
+        // Si apre l'immagine in una nuova scheda, da cui l'utente la salva
+        // con "tieni premuto -> Salva immagine".
         const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
@@ -1234,9 +1236,6 @@
       });
     });
   }
-  
-  
-
 
   // ---------- ridimensionamento manuale dei grafici (maniglia d'angolo) ----------
   const chartsByBox = new Map();
