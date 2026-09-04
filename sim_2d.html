@@ -743,7 +743,7 @@
       calibTemp.push([nx,ny]);
       if(calibTemp.length===2){
         const distPx = Math.hypot(calibTemp[1][0]-calibTemp[0][0], calibTemp[1][1]-calibTemp[0][1]);
-        const val = prompt('Distanza reale tra i due punti in metri (usare il punto per la parte decimale:');
+        const val = prompt('Distanza reale tra i due punti in metri (usare il punto per la parte decimale):');
         const distM = parseFloat(val);
         if(!isNaN(distM) && distM>0){
           scalaMPerPx = distM/distPx;
