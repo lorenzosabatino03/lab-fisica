@@ -354,11 +354,15 @@
     gap:18px;
   }
   @media (max-width: 700px){ .charts{grid-template-columns:1fr;} }
-  .chart-box{background:#fff; border:1px solid var(--paper-line); border-radius:5px; padding:10px;}
-  .chart-box{background:#fff; border:1px solid var(--paper-line); border-radius:5px; padding:10px; position:relative; overflow:hidden;}
-  .chart-box canvas{width:100%!important; height:100%!important; display:block;}
+  .chart-box{background:#fff; border:1px solid var(--paper-line); border-radius:5px; padding:10px; position:relative; overflow:hidden; display:flex; flex-direction:column;}
+  .chart-title{flex:0 0 auto; font-family:'Source Serif 4', serif; font-size:15px; font-weight:600; margin:0 0 6px; color:var(--ink);text-align:center}
+  .canvas-wrap{flex:1 1 auto; min-height:0; position:relative;}
+  .canvas-wrap canvas{width:100%!important; height:100%!important; display:block;}
+  .save-chart-btn{position:absolute; right:4px; top:4px; z-index:5; border:1px solid var(--panel-line); background:rgba(255,255,255,0.9); color:var(--ink-soft); border-radius:3px; padding:3px 7px; font-size:12px; cursor:pointer;}
+  .save-chart-btn:hover{color:var(--ink); border-color:var(--ink-soft);}
   .chart-box-traj{ justify-self:center; }
-  .resize-handle{    position:absolute; right:3px; bottom:3px;
+  .resize-handle{
+    position:absolute; right:3px; bottom:3px;
     width:16px; height:16px;
     cursor:nwse-resize;
     background:
@@ -514,7 +518,7 @@
           <button id="exportBtn" disabled>Esporta CSV</button>
         </div>
         <div class="actions">
-          <button id="clearBtn", >Azzera tutto</button>
+          <button id="clearBtn">Azzera tutto</button>
         </div>
 
         <div id="log">Scegli una modalità, poi tocca/clicca sul video.</div>
@@ -526,10 +530,10 @@
       <h2>Risultati</h2>
       <pre id="summaryBlock">—</pre>
       <div class="charts">
-        <div class="chart-box chart-box-traj"><canvas id="chartTraj"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
-        <div class="chart-box"><canvas id="chartV"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
-        <div class="chart-box"><canvas id="chartX"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
-        <div class="chart-box"><canvas id="chartY"></canvas><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><div class="resize-handle"></div></div>
+        <div class="chart-box chart-box-traj"><div class="chart-title">Traiettoria y(x)</div><div class="canvas-wrap"><canvas id="chartTraj"></canvas></div><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><button class="save-chart-btn" data-chart="chartTraj" title="Salva grafico come immagine">⬇</button><div class="resize-handle"></div></div>
+        <div class="chart-box"><div class="chart-title">Velocità v_x(t) e v_y(t)</div><div class="canvas-wrap"><canvas id="chartV"></canvas></div><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><button class="save-chart-btn" data-chart="chartV" title="Salva grafico come immagine">⬇</button><div class="resize-handle"></div></div>
+        <div class="chart-box"><div class="chart-title">Posizione x(t)</div><div class="canvas-wrap"><canvas id="chartX"></canvas></div><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><button class="save-chart-btn" data-chart="chartX" title="Salva grafico come immagine">⬇</button><div class="resize-handle"></div></div>
+        <div class="chart-box"><div class="chart-title">Posizione y(t)</div><div class="canvas-wrap"><canvas id="chartY"></canvas></div><button class="reset-chart-btn" title="Reimposta dimensione e zoom">⟲</button><button class="save-chart-btn" data-chart="chartY" title="Salva grafico come immagine">⬇</button><div class="resize-handle"></div></div>
       </div>
     </div>
   </div>
@@ -551,6 +555,25 @@
 <script>
 (function(){
   "use strict";
+
+  // Legenda: pallini pieni per i dati; per i fit (dataset con showLine)
+  // una lineetta tratteggiata, coerente con come sono disegnati nel grafico.
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.generateLabels = function(chart){
+    return chart.data.datasets.map((ds, i)=>{
+      const isFit = ds.showLine === true;
+      return {
+        text: ds.label,
+        fillStyle: isFit ? 'transparent' : (ds.backgroundColor || ds.borderColor),
+        strokeStyle: ds.borderColor || ds.backgroundColor,
+        lineWidth: isFit ? 2 : 0,
+        lineDash: isFit ? (ds.borderDash || []) : [],
+        pointStyle: isFit ? 'line' : 'circle',
+        hidden: !chart.isDatasetVisible(i),
+        datasetIndex: i
+      };
+    });
+  };
 
   // sfondo bianco dietro ad ogni grafico: senza questo, il PNG salvato
   // con "salva immagine" ha lo sfondo trasparente
@@ -863,13 +886,13 @@
 
       // alone scuro per aumentare il contrasto
       ctx.beginPath();
-      ctx.arc(dx,dy, isCurrent?9:7, 0, 2*Math.PI);
+      ctx.arc(dx,dy, isCurrent?7:5, 0, 2*Math.PI);
       ctx.fillStyle = '#111';
       ctx.fill();
 
       // punto rosso acceso
       ctx.beginPath();
-      ctx.arc(dx,dy, isCurrent?7:5, 0, 2*Math.PI);
+      ctx.arc(dx,dy, isCurrent?5:3, 0, 2*Math.PI);
       ctx.fillStyle = COLORS.traj;
       ctx.fill();
 
@@ -897,13 +920,13 @@
 
         // bordo scuro
         ctx.beginPath();
-        ctx.arc(dx,dy,8,0,2*Math.PI);
+        ctx.arc(dx,dy,5,0,2*Math.PI);
         ctx.fillStyle='#111';
         ctx.fill();
 
         // punto acceso
         ctx.beginPath();
-        ctx.arc(dx,dy,6,0,2*Math.PI);
+        ctx.arc(dx,dy,4,0,2*Math.PI);
         ctx.fillStyle=color;
         ctx.fill();
       });
@@ -1094,10 +1117,10 @@
 
     chartTraj = new Chart(document.getElementById('chartTraj').getContext('2d'), {
       type:'scatter',
-      data:{ datasets:[{ label:'traiettoria y(x)', data: x.map((xi,i)=>({x:xi,y:y[i]})),
-        backgroundColor:'#FF2020', showLine:true, borderColor:'#FF2020', pointRadius:5, pointHoverRadius:7 }]},
+      data:{ datasets:[{ label:'dati', data: x.map((xi,i)=>({x:xi,y:y[i]})),
+        backgroundColor:'#FF2020', showLine:false, pointRadius:5, pointHoverRadius:7 }]},
       options:{ responsive:true, maintainAspectRatio:false,
-        plugins:{ title:{display:true, text:'Traiettoria y(x)'}, zoom:zoomConfig(false) },
+        plugins:{ title:{display:false}, zoom:zoomConfig(false) },
         scales:{
           x:{ min:centerX-halfRange, max:centerX+halfRange, title:{display:true,text:'x ('+unita+')'} },
           y:{ min:centerY-halfRange, max:centerY+halfRange, title:{display:true,text:'y ('+unita+')'} }
@@ -1109,10 +1132,10 @@
       type:'scatter',
       data:{ datasets:[
         {label:'dati', data:t.map((ti,i)=>({x:ti,y:x[i]})), backgroundColor:'#FF8C00', pointRadius:5, pointHoverRadius:7},
-        {label:'fit lineare', data:tFit.map((ti,i)=>({x:ti,y:xFit[i]})), showLine:true, borderColor:'#D98F4B', pointRadius:0, borderDash:[4,3]}
+        {label:'fit', data:tFit.map((ti,i)=>({x:ti,y:xFit[i]})), showLine:true, borderColor:'#D98F4B', pointRadius:0, borderDash:[4,3], pointStyle:'line'}
       ]},
       options:{ responsive:true, maintainAspectRatio:false,
-        plugins:{ title:{display:true, text:'x(t)  →  vx = '+cx[0].toFixed(3)+' '+unita+'/s'}, zoom:zoomConfig(false) },
+        plugins:{ title:{display:false}, zoom:zoomConfig(false) },
         scales:{ x:{title:{display:true,text:'t (s)'}}, y:{title:{display:true,text:'x ('+unita+')'}} } }
     });
 
@@ -1121,25 +1144,36 @@
       type:'scatter',
       data:{ datasets:[
         {label:'dati', data:t.map((ti,i)=>({x:ti,y:y[i]})), backgroundColor:'#00CFFF', pointRadius:5, pointHoverRadius:7},
-        {label:'fit parabolico', data:tFit.map((ti,i)=>({x:ti,y:yFit[i]})), showLine:true, borderColor:'#5FBE84', pointRadius:0, borderDash:[4,3]}
+        {label:'fit', data:tFit.map((ti,i)=>({x:ti,y:yFit[i]})), showLine:true, borderColor:'#5FBE84', pointRadius:0, borderDash:[4,3], pointStyle:'line'}
       ]},
       options:{ responsive:true, maintainAspectRatio:false,
-        plugins:{ title:{display:true, text:'y(t)  →  a = '+(2*cy[0]).toFixed(3)+' '+unita+'/s²'}, zoom:zoomConfig(false) },
+        plugins:{ title:{display:false}, zoom:zoomConfig(false) },
         scales:{ x:{title:{display:true,text:'t (s)'}}, y:{title:{display:true,text:'y ('+unita+')'}} } }
     });
 
     // velocità istantanee (differenze finite centrate)
     const vxIst = gradient(t, x);
     const vyIst = gradient(t, y);
+
+    // Fit vx(t): costante, pari alla media dei valori istantanei.
+    const vxCost = vxIst.reduce((s,v)=>s+v,0)/vxIst.length;
+    const vxFit = tFit.map(()=>vxCost);
+
+    // Fit vy(t): lineare, ottenuto dalla derivata del fit parabolico y(t).
+    // y = a2*t^2 + a1*t + a0  ->  vy = 2*a2*t + a1
+    const vyFit = tFit.map(ti=>2*cy[0]*ti+cy[1]);
+
     chartV = new Chart(document.getElementById('chartV').getContext('2d'), {
       type:'scatter',
       data:{ datasets:[
-        {label:'vx(t)', data:t.map((ti,i)=>({x:ti,y:vxIst[i]})), showLine:true, borderColor:'#D98F4B', backgroundColor:'#FF8C00', pointRadius:5, pointHoverRadius:7},
-        {label:'vy(t)', data:t.map((ti,i)=>({x:ti,y:vyIst[i]})), showLine:true, borderColor:'#5FBE84', backgroundColor:'#5FBE84'}
+        {label:'v_x(t)', data:t.map((ti,i)=>({x:ti,y:vxIst[i]})), showLine:false, borderColor:'#D98F4B', backgroundColor:'#FF8C00', pointRadius:5, pointHoverRadius:7},
+        {label:'fit v_x', data:tFit.map((ti,i)=>({x:ti,y:vxFit[i]})), showLine:true, borderColor:'#D98F4B', backgroundColor:'transparent', pointRadius:0, borderDash:[4,3], pointStyle:'line'},
+        {label:'v_y(t)', data:t.map((ti,i)=>({x:ti,y:vyIst[i]})), showLine:false, borderColor:'#00CFFF', backgroundColor:'#00CFFF', pointRadius:5, pointHoverRadius:7},
+        {label:'fit v_y', data:tFit.map((ti,i)=>({x:ti,y:vyFit[i]})), showLine:true, borderColor:'#00CFFF', backgroundColor:'transparent', pointRadius:0, borderDash:[4,3], pointStyle:'line'}
       ]},
       options:{ responsive:true, maintainAspectRatio:false,
-        plugins:{ title:{display:true, text:'Velocità istantanee (differenze finite)'}, zoom:zoomConfig(false) },
-        scales:{ x:{title:{display:true,text:'t (s)'}}, y:{title:{display:true,text:unita+'/s'}} } }
+        plugins:{ title:{display:false}, zoom:zoomConfig(false) },
+        scales:{ x:{title:{display:true,text:'t (s)'}}, y:{title:{display:true,text:'v ('+unita+'/s)'}} } }
     });
 
     // collega ogni box del grafico al suo Chart.js, e assegna una
@@ -1153,6 +1187,27 @@
       initBoxSize(box);
       makeResizable(box);
       bindResetButton(box);
+    });
+
+    document.querySelectorAll('.save-chart-btn').forEach(btn=>{
+      if(btn.dataset.bound) return;
+      btn.dataset.bound='1';
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.chart;
+        const chart = {chartTraj, chartX, chartY, chartV}[id];
+        if(!chart) return;
+        const a = document.createElement('a');
+        a.href = chart.toBase64Image('image/png', 1);
+        const nomi = {
+		    chartTraj: 'Traiettoria.png',
+		    chartV: 'Velocita_vx_vy.png',
+		    chartX: 'Posizione_x_t.png',
+		    chartY: 'Posizione_y_t.png'
+		};
+
+a.download = nomi[id];
+        a.click();
+      });
     });
   }
 
@@ -1175,7 +1230,8 @@
     box.dataset.sized = '1';
   }
 
-  function makeResizable(box){    const handle = box.querySelector('.resize-handle');
+  function makeResizable(box){
+    const handle = box.querySelector('.resize-handle');
     if(!handle || handle.dataset.bound) return;
     handle.dataset.bound = '1';
     const square = handle.dataset.square === 'true';
